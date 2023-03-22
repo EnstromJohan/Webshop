@@ -8,10 +8,10 @@ namespace Webshop
         public Film(string title, string director, string genre, decimal price )
         {
             Id = new ObjectId();
-            _title = title;
-            _director = director;
-            _genre = genre;
-            _price = price;
+            this.Title = title;
+            this.Director = director;
+            this.Genre = genre;
+            this.Price = price;
         }
 
         [BsonId]
@@ -19,14 +19,14 @@ namespace Webshop
 
 
         [BsonElement]
-        public string _title { get; set; }
+        public string Title { get; set; }
 
         [BsonElement]
-        public string _director { get; set; }
+        public string Director { get; set; }
 
         [BsonElement]
-        public string _genre { get; set; }
+        public string Genre { get; set; }
         [BsonElement]
-        public decimal _price { get; set; }
+        public decimal Price { get; set; }
     }
 }

@@ -20,21 +20,22 @@ namespace Webshop
             _collection.InsertOne(film);
         }
 
-        public void Delete(string title)
+        public void Delete(ObjectId id)
         {
-            var filter = Builders<Film>.Filter.Eq("title", title);
+            var filter = Builders<Film>.Filter.Eq("_id",id);
             _collection.DeleteOne(filter);
         }
 
-        public List<Film> GetAll()
+        public List<Film> ReadAll()
         {
-            var result = _collection.Find(new BsonDocument()).ToList();
-            return new List<Film>(result.ToList());
+            return _collection.Find(new BsonDocument()).ToList();
+            //var result = _collection.Find(new BsonDocument()).ToList();
+            //return new List<Film>(result.ToList());
 
         }
 
 
-        public Film GetOne(string title)
+        public Film ReadOne(string title)
         {
             var filter = Builders<Film>.Filter.Eq("title", title);
             return _collection.Find(filter).FirstOrDefault();
@@ -42,14 +43,14 @@ namespace Webshop
 
 
 
-        public void Update(string id, Film film)
+        public void Update(ObjectId id, Film film)
         {
             var filter = Builders<Film>.Filter.Eq("id", film.Id);
             var update = Builders<Film>.Update
-                .Set(f => f._title, film._title)
-                .Set(f => f._director, film._director)
-                .Set(f => f._genre, film._genre)
-                .Set(f => f._price, film._price);
+                .Set(f => f.Title, film.Title)
+                .Set(f => f.Director, film.Director)
+                .Set(f => f.Genre, film.Genre)
+                .Set(f => f.Price, film.Price);
 
             var result = _collection.UpdateOne(filter, update);
         }

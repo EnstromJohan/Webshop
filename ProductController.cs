@@ -1,4 +1,7 @@
-﻿namespace Webshop
+﻿using MongoDB.Bson;
+using System.Diagnostics;
+
+namespace Webshop
 {
     internal class ProductController
     {
@@ -9,6 +12,7 @@
         {
             this.io = io;
             this.filmDao = filmDao;
+
         }
 
         public void Run()
@@ -24,7 +28,7 @@
                 io.Output("5. Ta bort film");
                 io.Output("6. Stäng applikationen");
                 io.Output("Vad vill du göra?");
-                int input = int.Parse(Console.ReadLine());
+                int input = int.Parse(io.Input());
                 switch (input)
                 {
                     case 1:
@@ -67,7 +71,7 @@
             io.Output("Ange genre: ");
             genre = io.Input();
             io.Output("Ange pris: ");
-            price = Convert.ToInt32(io.Input());
+            price = Convert.ToDecimal(io.Input());
 
             Film film = new Film(title, director, genre, price);
             filmDao.Create(film);
@@ -77,43 +81,51 @@
 
         private void GetFilms()
         {
-            var films = filmDao.GetAll();
+            var films = filmDao.ReadAll();
+            filmDao.ReadAll()
+                .ForEach(films => { 
+                io.Output(films.Title); 
+                io.Output(films.Director); 
+                io.Output(films.Genre); 
+                io.Output(films.Price.ToString()); });
 
-            foreach (var film in films)
-            {
-                io.Output(film.ToString());
-            }
         }
 
         private void GetFilm()
         {
             io.Output("Vilken film vill du hämta?");
             string title = io.Input();
-            var result = filmDao.GetOne(title);
+            var result = filmDao.ReadOne(title);
 
             if (result == null)
+            {
                 io.Output("Ingen film hittades");
+            }
             else
-                io.Output(result.ToString());
-            Console.Read();
+            {
+                io.Output(result.Title); io.Output(result.Director); io.Output(result.Genre); io.Output(result.Price.ToString()) ;
+            }
 
         }
 
         private void UpdateFilm()
         {
-            var films = filmDao.GetAll();
+            var films = filmDao.ReadAll();
+            filmDao.ReadAll()
+                .ForEach(films =>
+                {
+                    io.Output(films.Title);
+                    io.Output(films.Id.ToString());
+                });
 
-            foreach (var movie in films)
-            {
-                io.Output(movie.ToString());
-            }
+                io.Output("Skriv in id för filmen du vill uppdatera");
+            string id = io.Input();
 
-            io.Output("Skriv in id för filmen du vill uppdatera");
-            string id = Console.ReadLine();
+            var objectId = ObjectId.Parse(id);
 
-            var film = filmDao.GetOne(id);
+           
 
-            if (film == null)
+            if (id == null)
             {
                 io.Output("Filmen hittades inte");
             }
@@ -122,23 +134,19 @@
                 io.Output("Skriv in info om filmen");
 
                 io.Output("Titel: ");
-                string title = Console.ReadLine();
+                string title = io.Input();
 
                 io.Output("Regissör: ");
-                string director = Console.ReadLine();
+                string director = io.Input();
 
                 io.Output("Genre: ");
-                string genre = Console.ReadLine();
+                string genre = io.Input();
 
                 io.Output("Pris: ");
-                decimal price = decimal.Parse(Console.ReadLine());
+                decimal price = decimal.Parse(io.Input());
 
-                film._title = title;
-                film._director = director;
-                film._genre = genre;
-                film._price = price;
-
-                filmDao.Update(id, film);
+                Film film = new Film(title, director, genre, price);
+                filmDao.Update(objectId, film);
 
                 io.Output("Film uppdaterad");
             }
@@ -146,17 +154,21 @@
 
         private void DeleteFilm()
         {
-            var films = filmDao.GetAll();
+            var films = filmDao.ReadAll();
+            filmDao.ReadAll()
+                .ForEach(films =>
+                {
+                    io.Output(films.Title);
+                    io.Output(films.Id.ToString());
+                });
+                
+            io.Output("Skriv in id på filmen du vill ta bort");
+            string id = io.Input();
+            var objectId = ObjectId.Parse(id);
+            filmDao.Delete(objectId);
 
-            foreach (var film in films)
-            {
-                io.Output(film.ToString());
-            }
+            io.Output("Filmen togs bort");
 
-            io.Output("Skriv in titeln du vill ta bort");
-            string title = Console.ReadLine();
-
-            filmDao.Delete(title);
         }
 
 
