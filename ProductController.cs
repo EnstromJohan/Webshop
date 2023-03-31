@@ -94,8 +94,16 @@ namespace Webshop
         private void GetFilm()
         {
             io.Output("Vilken film vill du hämta?");
-            string title = io.Input();
-            var result = filmDao.ReadOne(title);
+            filmDao.ReadAll()
+                .ForEach(films =>
+                {
+                    io.Output(films.Title);
+                    io.Output(films.Id.ToString());
+                });
+            string id = io.Input();
+            
+            var objectId = ObjectId.Parse(id);
+            var result = filmDao.ReadOne(objectId);
 
             if (result == null)
             {

@@ -7,7 +7,7 @@ namespace Webshop
     {
         void Create(Film film);
         List<Film> ReadAll();
-        Film ReadOne(string title);
+        Film ReadOne(ObjectId id);
         void Update(ObjectId id, Film film);
         void Delete(ObjectId id);
     }
